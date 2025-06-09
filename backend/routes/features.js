@@ -1,3 +1,4 @@
+const Meeting = require('../models/Meeting');
 const express = require('express');
 const router = express.Router();
 const authenticate = require('../middleware/auth');
@@ -9,6 +10,7 @@ const Transcription = require('../models/Transcription');
 const Summary = require('../models/Summary');
 const MoM = require('../models/MoM');
 const Recording = require('../models/Recording');
+
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -168,6 +170,16 @@ router.get('/recording/:meetingId', authenticate, async (req, res) => {
     res.status(200).json({ recording });
   } catch (err) {
     console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.get('/recordings', authenticate, async (req, res) => {
+  try {
+    const recordings = await Recording.find().populate('meeting');
+    res.status(200).json({ recordings });
+  } catch (err) {
+    console.error('Error fetching recordings:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
